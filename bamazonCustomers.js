@@ -27,7 +27,7 @@ function itemForSale() {
     console.table(result);
 
   })
-  purchase();
+  setTimeout(function(){purchase()}, 1000);
 };
 
 function purchase() {
@@ -44,25 +44,28 @@ function purchase() {
       }
     ])
     .then(function (ans) {
-      var queryDB = "SELECT * FROM product WHERE item_id = ?";
+      var queryDB = "SELECT * FROM products WHERE item_id = ?";
 
-      db.query(querydb, ans.item, function (err, result) {
+      db.query(queryDB, ans.item, function (err, result) {
+
+        
         if (!result.length) {
-
+          
           console.log("\r\n");
           console.log("Sorry this item is not available, please select another item.");
           purchase();
-
+          
         } else if (ans.units > result[0].stock_quantity) {
-
+          
           console.log("\r\n Sorry, we do not have that amount.  Please try again \r\n");
-
+          
         } else {
           let updateDB = "UPDATE products SET stock_quantity = ? WHERE item_id = ?";
           let newDbAmount = result[0].stock_quantity - ans.units;
-
+          
           db.query(updateDB, [newDbAmount, ans.item], function (err, res) {
             console.log("\r\n Thank you for purchase.  Come again soon.\r\n");
+            console.table(result);
             db.end();
           })
         }
